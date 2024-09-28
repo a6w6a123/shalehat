@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #2c3e50;
+            padding: 10px;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #1abc9c;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+            }
+            nav a {
+                margin: 5px 0;
+                padding: 10px;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 4px;
+            }
+        }
+        .input-field {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>لوحة التحكم</h1>
+        <nav>
+            <a href="index.html">الصفحة الرئيسية</a>
+            <a href="booking.html">حجز شاليه</a>
+            <a href="addChalet.html">إضافة شاليه</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>عرض الشاليهات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الشاليه</th>
+                    <th>السعر</th>
+                    <th>وقت الدخول</th>
+                    <th>وقت الخروج</th>
+                    <th>حذف</th>
+                </tr>
+            </thead>
+            <tbody id="chaletList"></tbody>
+        </table>
+
+        <h2>عرض الحجوزات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الشاليه</th>
+                    <th>السعر</th>
+                    <th>التاريخ</th>
+                    <th>الاسم</th>
+                    <th>رقم الجوال</th>
+                    <th>كود الحجز</th>
+                    <th>تم الوصول</th>
+                    <th>العربون المدفوع</th>
+                    <th>التأمين المدفوع</th>
+                    <th>حالة الدفع الكامل</th>
+                    <th>حالة دفع التأمين</th>
+                    <th>حالة دفع العربون</th>
+                    <th>تعديل</th>
+                    <th>عرض الفاتورة</th> <!-- إضافة عنوان زر عرض الفاتورة -->
+                </tr>
+            </thead>
+            <tbody id="bookingList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function displayBookings() {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            const bookingList = document.getElementById('bookingList');
+            bookingList.innerHTML = '';
+            chalets.forEach(chalet => {
+                chalet.bookings.forEach((booking, index) => {
+                    bookingList.innerHTML += `
+                        <tr>
+                            <td>${chalet.name}</td>
+                            <td>${chalet.price}</td>
+                            <td>${booking.date}</td>
+                            <td>${booking.name}</td>
+                            <td>${booking.phone}</td>
+                            <td>${booking.bookingCode}</td>
+                            <td>
+                                <select onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'arrivalStatus', this.value)">
+                                    <option value="نعم" ${booking.arrivalStatus === 'نعم' ? 'selected' : ''}>نعم</option>
+                                    <option value="لا" ${booking.arrivalStatus === 'لا' ? 'selected' : ''}>لا</option>
+                                </select>
+                            </td>
+                            <td class="input-field"><input type="number" value="${booking.depositPaid}" onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'depositPaid', this.value)"></td>
+                            <td class="input-field"><input type="number" value="${booking.insurancePaid}" onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'insurancePaid', this.value)"></td>
+                            <td class="input-field">
+                                <select onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'fullPaymentStatus', this.value)">
+                                    <option value="نعم" ${booking.fullPaymentStatus === 'نعم' ? 'selected' : ''}>نعم</option>
+                                    <option value="لا" ${booking.fullPaymentStatus === 'لا' ? 'selected' : ''}>لا</option>
+                                </select>
+                            </td>
+                            <td class="input-field">
+                                <select onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'insurancePaymentStatus', this.value)">
+                                    <option value="نعم" ${booking.insurancePaymentStatus === 'نعم' ? 'selected' : ''}>نعم</option>
+                                    <option value="لا" ${booking.insurancePaymentStatus === 'لا' ? 'selected' : ''}>لا</option>
+                                </select>
+                            </td>
+                            <td class="input-field">
+                                <select onchange="updateBooking(${chalets.indexOf(chalet)}, ${index}, 'depositPaymentStatus', this.value)">
+                                    <option value="نعم" ${booking.depositPaymentStatus === 'نعم' ? 'selected' : ''}>نعم</option>
+                                    <option value="لا" ${booking.depositPaymentStatus === 'لا' ? 'selected' : ''}>لا</option>
+                                </select>
+                            </td>
+                            <td><button onclick="deleteBooking(${chalets.indexOf(chalet)}, ${index})">حذف</button></td>
+                            <td><a href="invoice.html?chaletIndex=${chalets.indexOf(chalet)}&bookingIndex=${index}">عرض الفاتورة</a></td> <!-- زر عرض الفاتورة -->
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        function displayChalets() {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            const chaletList = document.getElementById('chaletList');
+            chaletList.innerHTML = '';
+            chalets.forEach((chalet, index) => {
+                chaletList.innerHTML += `
+                    <tr>
+                        <td>${chalet.name}</td>
+                        <td>${chalet.price}</td>
+                        <td>${chalet.checkIn}</td>
+                        <td>${chalet.checkOut}</td>
+                        <td><button onclick="deleteChalet(${index})">حذف</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteChalet(index) {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            chalets.splice(index, 1);
+            localStorage.setItem('chalets', JSON.stringify(chalets));
+            displayChalets(); // تحديث قائمة الشاليهات
+        }
+
+        function updateBooking(chaletIndex, bookingIndex, field, value) {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            chalets[chaletIndex].bookings[bookingIndex][field] = value;
+            localStorage.setItem('chalets', JSON.stringify(chalets));
+        }
+
+        function deleteBooking(chaletIndex, bookingIndex) {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            chalets[chaletIndex].bookings.splice(bookingIndex, 1);
+            localStorage.setItem('chalets', JSON.stringify(chalets));
+            displayBookings();
+        }
+
+        function init() {
+            displayBookings();
+            displayChalets(); // عرض الشاليهات عند التحميل
+        }
+
+        init();
+    </script>
+</body>
+</html>

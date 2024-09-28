@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة شاليه</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-field {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background: #35424a;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إضافة شاليه</h1>
+        <div class="input-field">
+            <label>اسم الشاليه:</label>
+            <input type="text" id="chaletName" placeholder="أدخل اسم الشاليه">
+        </div>
+        <div class="input-field">
+            <label>سعر الشاليه:</label>
+            <input type="number" id="chaletPrice" placeholder="أدخل سعر الشاليه">
+        </div>
+        <div class="input-field">
+            <label>سعر العربون:</label>
+            <input type="number" id="depositPrice" placeholder="أدخل سعر العربون">
+        </div>
+        <div class="input-field">
+            <label>سعر التأمين:</label>
+            <input type="number" id="insurancePrice" placeholder="أدخل سعر التأمين">
+        </div>
+        <div class="input-field">
+            <label>وقت الدخول:</label>
+            <input type="time" id="checkInTime">
+        </div>
+        <div class="input-field">
+            <label>وقت الخروج:</label>
+            <input type="time" id="checkOutTime">
+        </div>
+        <div class="input-field">
+            <label>تعليمات:</label>
+            <textarea id="instructions" placeholder="أدخل تعليمات الشاليه"></textarea>
+        </div>
+        <div class="input-field">
+            <label>مواصفات:</label>
+            <textarea id="specifications" placeholder="أدخل مواصفات الشاليه"></textarea>
+        </div>
+        <button onclick="addChalet()">إضافة شاليه</button>
+    </div>
+
+    <script>
+        function addChalet() {
+            const chaletName = document.getElementById('chaletName').value;
+            const chaletPrice = document.getElementById('chaletPrice').value;
+            const depositPrice = document.getElementById('depositPrice').value;
+            const insurancePrice = document.getElementById('insurancePrice').value;
+            const checkIn = document.getElementById('checkInTime').value;
+            const checkOut = document.getElementById('checkOutTime').value;
+            const instructions = document.getElementById('instructions').value;
+            const specifications = document.getElementById('specifications').value;
+
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            chalets.push({
+                name: chaletName,
+                price: chaletPrice,
+                deposit: depositPrice,
+                insurance: insurancePrice,
+                checkIn: checkIn,
+                checkOut: checkOut,
+                instructions: instructions,
+                specifications: specifications,
+                bookings: []
+            });
+            localStorage.setItem('chalets', JSON.stringify(chalets));
+            alert('تم إضافة الشاليه بنجاح!');
+            window.location.href = 'a.html'; // العودة لصفحة لوحة التحكم بعد الإضافة
+        }
+    </script>
+</body>
+</html>
