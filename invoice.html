@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاتورة الحجز</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .invoice {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 150px; /* حجم الشعار */
+        }
+        h1 {
+            color: #34495e;
+            margin: 5px 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        h2 {
+            color: #2980b9;
+            margin: 10px 0;
+            font-size: 22px;
+            border-bottom: 2px solid #1abc9c;
+            padding-bottom: 5px;
+        }
+        .invoice-item {
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            background-color: #f9f9f9;
+        }
+        .label-ar {
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: right; /* العنوان العربي على اليمين */
+            width: 30%; /* عرض ثابت للعناوين */
+        }
+        .label-en {
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: left; /* العنوان الإنجليزي على اليسار */
+            width: 30%; /* عرض ثابت للعناوين */
+        }
+        .value {
+            color: black; /* لون الإجابات إلى الأسود */
+            font-weight: normal;
+            text-align: center; /* محاذاة القيم في المنتصف */
+            flex: 1; /* توسع العنصر ليكون في المنتصف بين العناوين */
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 45%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+        @media print {
+            body {
+                margin: 0; /* إزالة الهوامش عند الطباعة */
+                padding: 0; /* إزالة الحشو عند الطباعة */
+                background-color: #ffffff; /* خلفية بيضاء للطباعة */
+            }
+            .invoice {
+                box-shadow: none; /* إزالة الظلال عند الطباعة */
+                border: 1px solid #ddd; /* إضافة حدود للطباعة */
+                max-width: 100%; /* ملء الصفحة */
+                page-break-inside: avoid; /* تجنب كسر الصفحة داخل الفاتورة */
+            }
+            button {
+                display: none; /* إخفاء الأزرار عند الطباعة */
+            }
+            footer {
+                display: none; /* إخفاء التذييل عند الطباعة */
+            }
+            @page {
+                margin: 0; /* إزالة الهوامش من صفحة الطباعة */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <div class="header">
+            <img src="path/to/logo.png" alt="شعار الموقع"> <!-- أضف رابط شعارك هنا -->
+            <h1>فاتورة الحجز</h1>
+            <h2>تفاصيل الحجز</h2>
+        </div>
+
+        <div class="invoice-item">
+            <span class="label-ar">كود الحجز:</span>
+            <span class="value" id="bookingCode"></span>
+            <span class="label-en">:Booking Code</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">اسم الشاليه:</span>
+            <span class="value" id="chaletName"></span>
+            <span class="label-en">:Chalet Name</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">الاسم:</span>
+            <span class="value" id="customerName"></span>
+            <span class="label-en">:Name</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">رقم الجوال:</span>
+            <span class="value" id="customerPhone"></span>
+            <span class="label-en">:Phone Number</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">تاريخ الحجز:</span>
+            <span class="value" id="bookingDate"></span>
+            <span class="label-en">:Booking Date</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">ساعة الدخول:</span>
+            <span class="value" id="checkInTime"></span>
+            <span class="label-en">:Check-In Time</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">ساعة الخروج:</span>
+            <span class="value" id="checkOutTime"></span>
+            <span class="label-en">:Check-Out Time</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">سعر الشالية :</span>
+            <span class="value" id="chaletPrice"></span>
+            <span class="label-en">:Chalet Price </span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">سعر العربون :</span>
+            <span class="value" id="depositPaid"></span>
+            <span class="label-en"> :Deposit</span>
+        </div>
+        <div class="invoice-item">
+            <span class="label-ar">سعر التأمين :</span>
+            <span class="value" id="insurancePaid"></span>
+            <span class="label-en">:Insurance </span>
+        </div>
+
+        <div class="invoice-item" style="margin-top: 30px;">
+            <span class="label-ar">التعليمات:</span>
+            <span class="value" style="font-size: 16px;">يرجى قراءة التعليمات بعناية. / Please read the instructions carefully.</span>
+            <span class="label-en">:Instructions</span>
+        </div>
+
+        <button id="printButton" onclick="printInvoice()">طباعة الفاتورة</button>
+        <button id="backButton" onclick="window.history.back()">عودة</button>
+    </div>
+
+    <footer>
+        &copy; 2024 جميع الحقوق محفوظة.
+    </footer>
+
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                chaletIndex: params.get('chaletIndex'),
+                bookingIndex: params.get('bookingIndex')
+            };
+        }
+
+        function displayInvoice() {
+            const { chaletIndex, bookingIndex } = getQueryParams();
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            const chalet = chalets[chaletIndex];
+            const booking = chalet.bookings[bookingIndex];
+
+            document.getElementById('chaletName').textContent = chalet.name;
+            document.getElementById('chaletPrice').textContent = chalet.price;
+            document.getElementById('bookingDate').textContent = booking.date;
+            document.getElementById('checkInTime').textContent = chalet.checkIn; // ساعة الدخول
+            document.getElementById('checkOutTime').textContent = chalet.checkOut; // ساعة الخروج
+            document.getElementById('customerName').textContent = booking.name;
+            document.getElementById('customerPhone').textContent = booking.phone;
+            document.getElementById('bookingCode').textContent = booking.bookingCode;
+            document.getElementById('depositPaid').textContent = booking.depositPaid;
+            document.getElementById('insurancePaid').textContent = booking.insurancePaid;
+        }
+
+        function printInvoice() {
+            window.print(); // تنفيذ وظيفة الطباعة
+        }
+
+        window.onload = displayInvoice; // عرض الفاتورة عند تحميل الصفحة
+    </script>
+</body>
+</html>
