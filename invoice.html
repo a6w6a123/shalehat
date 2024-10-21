@@ -50,23 +50,23 @@
             font-size: 18px;
             background-color: #f9f9f9;
         }
-        .label-ar {
+        .label-ar, .label-en {
             font-weight: bold;
             color: #2c3e50;
-            text-align: right; /* العنوان العربي على اليمين */
-            width: 30%; /* عرض ثابت للعناوين */
+        }
+        .label-ar {
+            text-align: right;
+            width: 30%;
         }
         .label-en {
-            font-weight: bold;
-            color: #2c3e50;
-            text-align: left; /* العنوان الإنجليزي على اليسار */
-            width: 30%; /* عرض ثابت للعناوين */
+            text-align: left;
+            width: 30%;
         }
         .value {
-            color: black; /* لون الإجابات إلى الأسود */
+            color: black;
             font-weight: normal;
-            text-align: center; /* محاذاة القيم في المنتصف */
-            flex: 1; /* توسع العنصر ليكون في المنتصف بين العناوين */
+            text-align: center;
+            flex: 1;
         }
         button {
             display: block;
@@ -92,24 +92,21 @@
         }
         @media print {
             body {
-                margin: 0; /* إزالة الهوامش عند الطباعة */
-                padding: 0; /* إزالة الحشو عند الطباعة */
-                background-color: #ffffff; /* خلفية بيضاء للطباعة */
+                margin: 0;
+                padding: 0;
+                background-color: #ffffff;
             }
             .invoice {
-                box-shadow: none; /* إزالة الظلال عند الطباعة */
-                border: 1px solid #ddd; /* إضافة حدود للطباعة */
-                max-width: 100%; /* ملء الصفحة */
-                page-break-inside: avoid; /* تجنب كسر الصفحة داخل الفاتورة */
+                box-shadow: none;
+                border: 1px solid #ddd;
+                max-width: 100%;
+                page-break-inside: avoid;
             }
-            button {
-                display: none; /* إخفاء الأزرار عند الطباعة */
-            }
-            footer {
-                display: none; /* إخفاء التذييل عند الطباعة */
+            button, footer {
+                display: none;
             }
             @page {
-                margin: 0; /* إزالة الهوامش من صفحة الطباعة */
+                margin: 0;
             }
         }
     </style>
@@ -117,7 +114,7 @@
 <body>
     <div class="invoice">
         <div class="header">
-            <img src="path/to/logo.png" alt="شعار الموقع"> <!-- أضف رابط شعارك هنا -->
+            <img src="path/to/logo.png" alt="شعار الموقع">
             <h1>فاتورة الحجز</h1>
             <h2>تفاصيل الحجز</h2>
         </div>
@@ -158,25 +155,19 @@
             <span class="label-en">:Check-Out Time</span>
         </div>
         <div class="invoice-item">
-            <span class="label-ar">سعر الشالية :</span>
+            <span class="label-ar">سعر الشاليه:</span>
             <span class="value" id="chaletPrice"></span>
-            <span class="label-en">:Chalet Price </span>
+            <span class="label-en">:Chalet Price</span>
         </div>
         <div class="invoice-item">
-            <span class="label-ar">سعر العربون :</span>
+            <span class="label-ar">سعر العربون:</span>
             <span class="value" id="depositPaid"></span>
-            <span class="label-en"> :Deposit</span>
+            <span class="label-en">:Deposit</span>
         </div>
         <div class="invoice-item">
-            <span class="label-ar">سعر التأمين :</span>
+            <span class="label-ar">سعر التأمين:</span>
             <span class="value" id="insurancePaid"></span>
-            <span class="label-en">:Insurance </span>
-        </div>
-
-        <div class="invoice-item" style="margin-top: 30px;">
-            <span class="label-ar">التعليمات:</span>
-            <span class="value" style="font-size: 16px;">يرجى قراءة التعليمات بعناية. / Please read the instructions carefully.</span>
-            <span class="label-en">:Instructions</span>
+            <span class="label-en">:Insurance</span>
         </div>
 
         <button id="printButton" onclick="printInvoice()">طباعة الفاتورة</button>
@@ -199,26 +190,40 @@
         function displayInvoice() {
             const { chaletIndex, bookingIndex } = getQueryParams();
             const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            
+            // التحقق من وجود الشاليه والحجز
+            if (chalets.length === 0 || !chalets[chaletIndex]) {
+                alert('لا توجد بيانات شاليه بهذا الرقم');
+                return;
+            }
+            
             const chalet = chalets[chaletIndex];
             const booking = chalet.bookings[bookingIndex];
 
+            if (!booking) {
+                alert('لا توجد بيانات حجز بهذا الرقم');
+                return;
+            }
+
+            // عرض البيانات في الفاتورة
             document.getElementById('chaletName').textContent = chalet.name;
             document.getElementById('chaletPrice').textContent = chalet.price;
             document.getElementById('bookingDate').textContent = booking.date;
-            document.getElementById('checkInTime').textContent = chalet.checkIn; // ساعة الدخول
-            document.getElementById('checkOutTime').textContent = chalet.checkOut; // ساعة الخروج
+            document.getElementById('checkInTime').textContent = chalet.checkIn;
+            document.getElementById('checkOutTime').textContent = chalet.checkOut;
             document.getElementById('customerName').textContent = booking.name;
             document.getElementById('customerPhone').textContent = booking.phone;
             document.getElementById('bookingCode').textContent = booking.bookingCode;
-            document.getElementById('depositPaid').textContent = booking.depositPaid;
-            document.getElementById('insurancePaid').textContent = booking.insurancePaid;
+            document.getElementById('depositPaid').textContent = booking.depositPaid || 'غير مدفوع';
+            document.getElementById('insurancePaid').textContent = booking.insurancePaid || 'غير مدفوع';
         }
 
         function printInvoice() {
-            window.print(); // تنفيذ وظيفة الطباعة
+            window.print(); // تنفيذ الطباعة
         }
 
-        window.onload = displayInvoice; // عرض الفاتورة عند تحميل الصفحة
+        // عرض الفاتورة عند تحميل الصفحة
+        window.onload = displayInvoice;
     </script>
 </body>
 </html>
