@@ -3,12 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفاتورة</title>
+    <title>الصفحة الرئيسية - حجز شاليهات</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             direction: rtl;
             background-color: #f4f4f4;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #2c3e50;
+            padding: 10px;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #1abc9c;
         }
         .container {
             width: 80%;
@@ -18,11 +41,14 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #35424a;
+        .chalet {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
         }
-        .invoice-details {
-            margin-top: 20px;
+        .chalet h3 {
+            color: #35424a;
         }
         .button {
             background-color: #35424a;
@@ -36,46 +62,99 @@
         .button:hover {
             background-color: #2c3e50;
         }
+        .search {
+            margin: 20px 0;
+        }
+        .input-field {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <h1>حجز الشاليهات</h1>
+        <nav>
+            <a href="index.html">الصفحة الرئيسية</a>
+            <a href="a.html">لوحة التحكم</a>
+        </nav>
+    </header>
     <div class="container">
-        <h1>الفاتورة</h1>
-        <div class="invoice-details" id="invoiceDetails"></div>
-        <button class="button" onclick="window.print()">طباعة الفاتورة</button>
+        <!-- قسم البحث عن الحجوزات -->
+        <div class="search">
+            <h2>ابحث عن حجزك</h2>
+            <div class="input-field">
+                <label>أدخل كود الحجز:</label>
+                <input type="text" id="bookingCode" placeholder="كود الحجز">
+                <button onclick="searchBooking()">بحث</button>
+                <div id="searchResult"></div>
+            </div>
+        </div>
+
+        <h2>الشاليهات المتاحة</h2>
+        <div id="chaletList"></div>
     </div>
 
     <script>
-        function displayInvoice() {
-            const bookingCode = localStorage.getItem('selectedBookingCode');
+        function displayChalets() {
             const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
-            const invoiceDetails = document.getElementById('invoiceDetails');
-            invoiceDetails.innerHTML = '';
+            const chaletList = document.getElementById('chaletList');
+            chaletList.innerHTML = '';
+
+            chalets.forEach(chalet => {
+                chaletList.innerHTML += 
+                    <div class="chalet">
+                        <h3>${chalet.name}</h3>
+                        <p>السعر: ${chalet.price} ريال</p>
+                        <button class="button" onclick="bookChalet('${chalet.name}')">احجز الآن</button>
+                    </div>
+                ;
+            });
+        }
+
+        function bookChalet(chaletName) {
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            const selectedChalet = chalets.find(chalet => chalet.name === chaletName);
+            localStorage.setItem('selectedChalet', JSON.stringify(selectedChalet));
+            window.location.href = 'booking.html';
+        }
+
+        function searchBooking() {
+            const code = document.getElementById('bookingCode').value;
+            const chalets = JSON.parse(localStorage.getItem('chalets')) || [];
+            const searchResult = document.getElementById('searchResult');
+            searchResult.innerHTML = '';
 
             let found = false;
 
             chalets.forEach(chalet => {
                 chalet.bookings.forEach(booking => {
-                    if (booking.bookingCode === bookingCode) {
+                    if (booking.bookingCode === code) {
                         found = true;
-                        invoiceDetails.innerHTML = `
+                        searchResult.innerHTML = 
+                            <h3>تفاصيل الحجز</h3>
                             <p><strong>اسم الشاليه:</strong> ${chalet.name}</p>
                             <p><strong>التاريخ:</strong> ${booking.date}</p>
                             <p><strong>الاسم:</strong> ${booking.name}</p>
                             <p><strong>رقم الجوال:</strong> ${booking.phone}</p>
                             <p><strong>كود الحجز:</strong> ${booking.bookingCode}</p>
-                            <p><strong>المبلغ الإجمالي:</strong> ${booking.amount} ريال</p>
-                        `;
+                            <button class="button" onclick="viewInvoice('${booking.bookingCode}')">عرض الفاتورة</button>
+                        ;
                     }
                 });
             });
 
             if (!found) {
-                invoiceDetails.innerHTML = '<p>لا توجد بيانات لهذا الحجز.</p>';
+                searchResult.innerHTML = '<p>لا توجد بيانات لهذا الكود.</p>';
             }
         }
 
-        displayInvoice();
+        function viewInvoice(bookingCode) {
+            // حفظ كود الحجز المحدد في localStorage لاستخدامه في صفحة الفاتورة
+            localStorage.setItem('selectedBookingCode', bookingCode);
+            window.location.href = 'invoice1.html'; // التوجيه إلى صفحة الفاتورة
+        }
+
+        displayChalets();
     </script>
 </body>
 </html>
