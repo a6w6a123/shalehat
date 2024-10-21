@@ -101,13 +101,13 @@
             chaletList.innerHTML = '';
 
             chalets.forEach(chalet => {
-                chaletList.innerHTML += 
+                chaletList.innerHTML += `
                     <div class="chalet">
                         <h3>${chalet.name}</h3>
                         <p>السعر: ${chalet.price} ريال</p>
                         <button class="button" onclick="bookChalet('${chalet.name}')">احجز الآن</button>
                     </div>
-                ;
+                `;
             });
         }
 
@@ -130,7 +130,7 @@
                 chalet.bookings.forEach(booking => {
                     if (booking.bookingCode === code) {
                         found = true;
-                        searchResult.innerHTML = 
+                        searchResult.innerHTML = `
                             <h3>تفاصيل الحجز</h3>
                             <p><strong>اسم الشاليه:</strong> ${chalet.name}</p>
                             <p><strong>التاريخ:</strong> ${booking.date}</p>
@@ -138,7 +138,7 @@
                             <p><strong>رقم الجوال:</strong> ${booking.phone}</p>
                             <p><strong>كود الحجز:</strong> ${booking.bookingCode}</p>
                             <button class="button" onclick="viewInvoice('${booking.bookingCode}')">عرض الفاتورة</button>
-                        ;
+                        `;
                     }
                 });
             });
@@ -149,9 +149,8 @@
         }
 
         function viewInvoice(bookingCode) {
-            // حفظ كود الحجز المحدد في localStorage لاستخدامه في صفحة الفاتورة
             localStorage.setItem('selectedBookingCode', bookingCode);
-            window.location.href = 'invoice1.html'; // التوجيه إلى صفحة الفاتورة
+            window.location.href = 'invoice.html'; 
         }
 
         displayChalets();
